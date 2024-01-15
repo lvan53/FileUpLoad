@@ -18,20 +18,15 @@ namespace FileUpload.services
                         Directory.CreateDirectory(path);
                     }
                 }
-                string extension = Path.GetExtension(file.FileName);
-                string randomfile = Path.GetRandomFileName() ;
+                string fileName = $"{DateTime.Now.ToFileTime()}-{file.FileName}";
 
-                using (var fileStream = new FileStream(Path.Combine(path, randomfile), FileMode.Create))
-                {
-                    await fileStream.CopyToAsync(fileStream);
-                }
+                using var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create);
+                await file.OpenReadStream().CopyToAsync(fileStream);
                 return true;
             }
             catch (Exception ex)
             {
-
-                throw new Exception("erreur", ex);
-
+                throw new Exception("An error has occurred", ex);
             }
         }
     }
