@@ -1,11 +1,11 @@
-using FileUpload.interfaces;
-using FileUpload.services;
+using FileUpload.Interfaces;
+using FileUpload.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<FileUploadService>();
+builder.Services.AddTransient<IFileUpload, FileUploadService>();
 
 var app = builder.Build();
 

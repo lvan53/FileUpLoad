@@ -1,49 +1,46 @@
-﻿using FileUpload.Models;
-using FileUpload.services;
+﻿using FileUpload.Interfaces;
+using FileUpload.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
-namespace FileUpload.Controllers
+namespace FileUpload.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly IFileUpload _fileUploadService;
+
+    public HomeController(IFileUpload fileUploadService)
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly FileUploadService    _fileUploadService;
+        _fileUploadService = fileUploadService;
+    }
 
-        public HomeController(ILogger<HomeController> logger, FileUploadService fileUploadService)
-        {
-            _logger = logger;
-            _fileUploadService = fileUploadService;
-        }
-        
-        public IActionResult Index()
-        {
-            return View();
-        }
-        [HttpPost]
-        public  async Task<ActionResult> Index(IFormFile file)
+    public IActionResult Index()
+    {
+        return View();
+    }
 
+    [HttpPost]
+    public  async Task<ActionResult> Index(IFormFile file)
+    {
+        if(await _fileUploadService.UploadFile(file))
         {
-            if(await _fileUploadService.uploadfile(file))
-            {
-                ViewBag.Message = "file upload success";
-            }
-            else { 
-                ViewBag.Message="failed";
-            }
-            
-            return View();
+            ViewBag.Message = "file upload success";
         }
-        public IActionResult Privacy()
-        {
-            return View();
+        else { 
+            ViewBag.Message="failed";
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View();
+    }
+
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
